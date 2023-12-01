@@ -129,7 +129,7 @@ const MultiplayerMode = () => {
   }, [userCanvases, isDrawing]);
 
   useEffect(() => {
-    socketRef.current = io("https://nok-draw-backend.vercel.app");
+    socketRef.current = io("https://146.190.114.212:8080");
     sendDataIntervalRef.current = window.setInterval(() => {
       if (!userCanvasesRef.current) return;
       const base64Img = userCanvasesRef.current!.get(userId)?.encodetoBase64();
