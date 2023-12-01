@@ -132,6 +132,29 @@ const Home: React.FC = () => {
           >
             Play as a guest
           </Button>
+
+            <Button
+            variant="outlined"
+            component={Link}
+            to="/playMmode"
+            sx={{
+              fontWeight: "bold",
+              color: theme.palette.revPrimary.main,
+              borderColor: theme.palette.revPrimary.main,
+              fontSize: "0.8rem",
+              width: { xs: "100%", sm: "auto" },
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              transition: "transform 0.2s ease-in-out",
+              "&:hover": {
+                bgcolor: darkMode === true ? "pink" : "black",
+                borderColor: darkMode === true ? "white" : "skyblue",
+                transform: "scale(1.05)",
+              },
+            }}
+          >
+            Play as a guest
+          </Button>
+
           <Button
             variant="contained"
             component={Link}
