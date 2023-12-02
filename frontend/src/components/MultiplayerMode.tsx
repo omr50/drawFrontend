@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { AnyAction } from "redux";
 import UserCanvas from "../Classes/UserClass";
 import { io, Socket } from "socket.io-client";
 import { pencilCursor, eraserCursor } from "../assets/cursors";
@@ -7,9 +8,11 @@ import { Box, Button, Container, IconButton, Typography } from "@mui/material";
 import CircularProgressWithLabel from "./CircularProgressWithLabel";
 import { AutoFixHigh, Clear, Dataset, Draw } from "@mui/icons-material";
 import { useTheme } from "../context/ThemeContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/rootReducer";
 import Winner from "./winner";
+import { fetchGamesThunk } from "../redux/games/games.actions";
+import { ThunkDispatch } from "redux-thunk";
 /*
 There will be multiple canvases on this page. The
 usersCanvas object holds uuid ids as keys and their
@@ -17,6 +20,7 @@ values as refs to html canvases. Through this object
 we can easily access the canvas options, and pixel data.
 */
 const MultiplayerMode = () => {
+  const dispatch = useDispatch() as ThunkDispatch<RootState, null, AnyAction>; 
   // refs and state variables
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // user id that remains CONSTANT across re-renders
@@ -30,6 +34,7 @@ const MultiplayerMode = () => {
   const { darkMode } = useTheme();
   const userRef = useRef(useSelector((state: RootState) => state.user.user)); // Adjust based on your store structure
   const [winners, setWinners] = useState(null)
+  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   console.log("GOT USER", userRef.current?.email)
   // array holding the canvasRef pairs.
   // Map over this array to place all canvases
@@ -245,7 +250,7 @@ const MultiplayerMode = () => {
       }
     });
 
-    socketRef.current.on('winners', (data: any) => {
+    socketRef.current.on('winners', async (data: any) => {
       console.log("WINNERS", data)
       setWinners(data)
       // draw the winner / loser on to the canvas.
@@ -259,6 +264,13 @@ const MultiplayerMode = () => {
       } else {
         userCanvasesRef.current.get(userId)?.drawImageToCanvas(loser, 65, 65, 150, 150);
       }
+      try {
+      if (isLoggedIn) {
+        await dispatch(fetchGamesThunk());
+      } 
+    } catch (error) {
+      console.error("Error:", error);
+    }
       // after it sends then disable the communication.
       setTimeout(()=> {
         window.clearInterval(sendDataIntervalRef.current!);
