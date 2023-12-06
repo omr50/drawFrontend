@@ -397,6 +397,7 @@ return (
               size="small"
               onClick={() => {
                 if (canvasRef && canvasRef.current) {
+                    canvasRef.current.getContext('2d')!.fillStyle = "white";
                     canvasRef.current.getContext('2d')!.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
                 }
               }}
